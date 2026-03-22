@@ -10,7 +10,27 @@ int insertionSort(float *p_a, int arr_size)
         float *p_i = p_a + i;  /* index of i-th element */
         int j = i - 1;
         
-        asm volatile(/*Assembly code*/);
+        asm volatile(
+            "flw f0, 0(%[p_i])\n\t" //key = A[i]
+            "while_loop:\n\t"
+                "bltz %[j], end\n\t"
+                "slli t0, %[j], 2\n\t"
+                "add t0, %[p_a], t0\n\t" // t0 = A[j] address
+                "flw f1, 0(t0)\n\t"  // f1 = A[j]
+                "fle.s t1, f1, f0\n\t"
+                "bnez t1, end\n\t"
+                "fsw f1, 4(t0)\n\t" //A[j+1] = A[j]
+                "addi %[j], %[j], -1\n\t"
+                "addi %[shift_cnt], %[shift_cnt], 1\n\t"
+                "j while_loop\n\t"
+            "end:\n\t"
+                "slli t0, %[j], 2\n\t"
+                "add t0, %[p_a], t0\n\t" // t0 = A[j] address
+                "fsw f0, 4(t0)\n\t"
+            : [p_i] "+r" (p_i), [p_a] "+r" (p_a), [j] "+r" (j), [shift_cnt] "+r" (shift_cnt)
+            :
+            : "t0", "t1", "f0", "f1"
+        );
     }
     
     return shift_cnt;
