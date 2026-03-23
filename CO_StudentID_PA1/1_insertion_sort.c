@@ -29,7 +29,7 @@ int insertionSort(float *p_a, int arr_size)
                 "fsw f0, 4(t0)\n\t"
             : [p_i] "+r" (p_i), [p_a] "+r" (p_a), [j] "+r" (j), [shift_cnt] "+r" (shift_cnt)
             :
-            : "t0", "t1", "f0", "f1"
+            : "t0", "t1", "f0", "f1", "memory"
         );
     }
     
