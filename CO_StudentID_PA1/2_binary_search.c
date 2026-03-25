@@ -13,7 +13,7 @@ int binarySearch(float *p_a, int arr_size, float target)
             "add t2, t0, t1\n\t" // t2 = mid
             "srli t2, t2, 1\n\t"
             "if1:\n\t"
-                "slli t3, t2, 2\n\t" // t3 = mid *4
+                "slli t3, t2, 2\n\t" // t3 = mid * 4
                 "add t3, t3, %[p_a]\n\t"
                 "flw f0, 0(t3)\n\t" // f0 = A[mid]
                 "feq.s t4, f0, %[target]\n\t"

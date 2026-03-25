@@ -17,8 +17,8 @@ bool hasCycle(struct ListNode *head)
     bool result = false;
 
     asm volatile(
-        "beqz %[slow], end\n\t"
-        "ld t0, 8(%[slow])\n\t"
+        "beqz %[fast], end\n\t"
+        "ld t0, 8(%[fast])\n\t"
         "beqz t0, end\n\t"
         "while_loop:\n\t"
             "ld %[fast], 8(%[fast])\n\t"
@@ -32,10 +32,10 @@ bool hasCycle(struct ListNode *head)
             "mv %[meet], %[fast]\n\t"
             "lw %[result], 0(%[meet])\n\t"
         "end:\n\t"
-        : [slow] "+r" (slow), [fast] "+r" (fast), [meet] "+r" (meet), [result] "+r" (result)
+        : [fast] "+r" (fast), [slow] "+r" (slow), [meet] "+r" (meet), [result] "+r" (result)
         :
         : "t0", "memory"
-    );
+        );
 
     if (result) 
         printf("%d\n", meet->val);

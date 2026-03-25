@@ -15,7 +15,7 @@ int insertionSort(float *p_a, int arr_size)
             "while_loop:\n\t"
                 "bltz %[j], end\n\t"
                 "slli t0, %[j], 2\n\t" // t0 = j * 4
-                "add t0, t0, %[p_a]\n\t"
+                "add t0, t0, %[p_a]\n\t" 
                 "flw f1, 0(t0)\n\t" // f1 = A[j]
                 "fle.s t1, f1, f0\n\t"
                 "bnez t1, end\n\t"
@@ -25,11 +25,11 @@ int insertionSort(float *p_a, int arr_size)
                 "j while_loop\n\t"
             "end:\n\t"
                 "slli t0, %[j], 2\n\t" // t0 = j * 4
-                "add t0, t0, %[p_a]\n\t"
+                "add t0, t0, %[p_a]\n\t" 
                 "fsw f0, 4(t0)\n\t"
             : [p_i] "+r" (p_i), [j] "+r" (j), [p_a] "+r" (p_a), [shift_cnt] "+r" (shift_cnt)
             : 
-            : "t0", "t1", "f0", "memory"
+            : "t0", "t1", "f0", "f1", "memory"
         );
     }
     
