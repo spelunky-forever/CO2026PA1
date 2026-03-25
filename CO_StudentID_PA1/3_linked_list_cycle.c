@@ -17,25 +17,24 @@ bool hasCycle(struct ListNode *head)
     bool result = false;
 
     asm volatile(
-        "beqz %[head], end\n\t"
-        "ld t0, 8(%[slow])\n\t" // t0 = slow.next
+        "beqz %[slow], end\n\t"
+        "ld t0, 8(%[slow])\n\t"
         "beqz t0, end\n\t"
         "while_loop:\n\t"
-            "ld %[fast], 8(%[fast])\n\t" // fast = fast.next
+            "ld %[fast], 8(%[fast])\n\t"
             "beqz %[fast], end\n\t"
-            "ld %[slow], 8(%[slow])\n\t" // slow = slow.next
-            "ld %[fast], 8(%[fast])\n\t" // fast = fast.next
+            "ld %[fast], 8(%[fast])\n\t"
+            "ld %[slow], 8(%[slow])\n\t"
             "beqz %[fast], end\n\t"
-            "beq %[slow], %[fast], meet\n\t"
+            "beq %[fast], %[slow], if_meet\n\t"
             "j while_loop\n\t"
-                
-        "meet:\n\t"
-            "mv %[meet], %[slow]\n\t"
-            "li %[result], 1\n\t"    
+        "if_meet:\n\t"
+            "mv %[meet], %[fast]\n\t"
+            "lw %[result], 0(%[meet])\n\t"
         "end:\n\t"
-        : [head] "+r" (head), [slow] "+r" (slow), [fast] "+r" (fast), [meet] "+r" (meet), [result] "+r" (result)
+        : [slow] "+r" (slow), [fast] "+r" (fast), [meet] "+r" (meet), [result] "+r" (result)
         :
-        : "t0"
+        : "t0", "memory"
     );
 
     if (result) 

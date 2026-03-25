@@ -6,33 +6,32 @@ int binarySearch(float *p_a, int arr_size, float target)
     int result = -1;
 
     asm volatile(
-        "li t0, 0\n\t" //t0 = left = 0
-        "mv t1, %[arr_size]\n\t" //t1 = right = L-1
-        "addi t1, t1, -1\n\t"
+        "li t0, 0\n\t" // t0 = L
+        "addi t1, %[arr_size], -1\n\t" // t1 = R
         "while_loop:\n\t"
             "bgt t0, t1, end\n\t"
-            "add t2, t0, t1\n\t" //t2 = mid = L+R
-            "srli t2, t2, 1\n\t" // t2 = mid
-            "slli t3, t2, 2\n\t" // t3 = mid*4
-            "add t3, t3, %[p_a]\n\t"
-            "flw f0, 0(t3)\n\t" // f0 = A[mid]
+            "add t2, t0, t1\n\t" // t2 = mid
+            "srli t2, t2, 1\n\t"
             "if1:\n\t"
-                "feq.s t5, f0, %[target]\n\t" // t5 = temp
-                "beqz t5, if2\n\t"
-                "mv %[result], t2\n\t" // result = t2
+                "slli t3, t2, 2\n\t" // t3 = mid *4
+                "add t3, t3, %[p_a]\n\t"
+                "flw f0, 0(t3)\n\t" // f0 = A[mid]
+                "feq.s t4, f0, %[target]\n\t"
+                "beqz t4, if2\n\t"
+                "mv %[result], t2\n\t"
                 "j end\n\t"
             "if2:\n\t"
-                "fge.s t5, f0, %[target]\n\t" // t5 = temp
-                "bnez t5, if3\n\t"
+                "fge.s t4, f0, %[target]\n\t"
+                "bnez t4, if3\n\t"
                 "addi t0, t2, 1\n\t"
                 "j while_loop\n\t"
             "if3:\n\t"
                 "addi t1, t2, -1\n\t"
                 "j while_loop\n\t"
         "end:\n\t"
-        : [arr_size] "+r" (arr_size), [target] "+f" (target), [p_a] "+r" (p_a), [result] "+r" (result)
+        : [arr_size] "+r" (arr_size), [p_a] "+r" (p_a), [target] "+f" (target), [result] "+r" (result)
         :
-        : "t0", "t1", "t2", "t3", "t5", "f0"
+        : "t0", "t1", "t2", "t3", "t4", "f0", "memory"
     );
 
     return result;

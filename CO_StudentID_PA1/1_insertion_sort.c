@@ -11,25 +11,25 @@ int insertionSort(float *p_a, int arr_size)
         int j = i - 1;
         
         asm volatile(
-            "flw f0, 0(%[p_i])\n\t" //key = A[i]
+            "flw f0, 0(%[p_i])\n\t" // f0 = key
             "while_loop:\n\t"
                 "bltz %[j], end\n\t"
-                "slli t0, %[j], 2\n\t"
-                "add t0, %[p_a], t0\n\t" // t0 = A[j] address
-                "flw f1, 0(t0)\n\t"  // f1 = A[j]
+                "slli t0, %[j], 2\n\t" // t0 = j * 4
+                "add t0, t0, %[p_a]\n\t"
+                "flw f1, 0(t0)\n\t" // f1 = A[j]
                 "fle.s t1, f1, f0\n\t"
                 "bnez t1, end\n\t"
-                "fsw f1, 4(t0)\n\t" //A[j+1] = A[j]
+                "fsw f1, 4(t0)\n\t"
                 "addi %[j], %[j], -1\n\t"
                 "addi %[shift_cnt], %[shift_cnt], 1\n\t"
                 "j while_loop\n\t"
             "end:\n\t"
-                "slli t0, %[j], 2\n\t"
-                "add t0, %[p_a], t0\n\t" // t0 = A[j] address
+                "slli t0, %[j], 2\n\t" // t0 = j * 4
+                "add t0, t0, %[p_a]\n\t"
                 "fsw f0, 4(t0)\n\t"
-            : [p_i] "+r" (p_i), [p_a] "+r" (p_a), [j] "+r" (j), [shift_cnt] "+r" (shift_cnt)
-            :
-            : "t0", "t1", "f0", "f1", "memory"
+            : [p_i] "+r" (p_i), [j] "+r" (j), [p_a] "+r" (p_a), [shift_cnt] "+r" (shift_cnt)
+            : 
+            : "t0", "t1", "f0", "memory"
         );
     }
     
